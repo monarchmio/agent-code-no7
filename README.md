@@ -166,23 +166,28 @@
 
 ### 在 ClawPro 平台使用
 
-1. 登录 [ClawPro 平台](https://clawpro.tencent.com)
-2. 导入 `agents/` 目录下的 Agent 配置文件
-3. 导入 `workflows/` 目录下的工作流定义
-4. 开始使用！
+1. 下载安装 [ClawPro 桌面客户端](https://openclawpro.cn/)
+2. 配置 AI 模型 API Key（支持 OpenAI / 通义千问 / DeepSeek 等）
+3. 克隆本仓库，将 `skills/` 目录下的技能文件夹复制到 `~/.openclaw/skills/`
+4. 将 `workspace/` 下的配置文件复制到 `~/.openclaw/workspace/`
+5. 重启 ClawPro，开始使用！
 
-### 本地体验
+### 本地安装
 
 ```bash
 # 克隆仓库
 git clone https://github.com/monarchmio/agent-code-no7.git
 cd agent-code-no7
 
-# 查看 Agent 配置
-cat agents/commander.json
+# 复制技能到 OpenClaw 目录（Windows）
+xcopy skills\* %USERPROFILE%\.openclaw\skills\ /E /I
 
-# 查看工作流定义
-cat workflows/contract_review.json
+# 复制工作区配置
+xcopy workspace\* %USERPROFILE%\.openclaw\workspace\ /E /I
+
+# macOS/Linux
+# cp -r skills/* ~/.openclaw/skills/
+# cp -r workspace/* ~/.openclaw/workspace/
 ```
 
 ---
@@ -193,7 +198,20 @@ cat workflows/contract_review.json
 agent-code-no7/
 ├── README.md                       # 项目说明
 ├── LICENSE                         # MIT License
-├── agents/                         # Agent 配置文件
+├── skills/                         # ⭐ OpenClaw 技能（SKILL.md 格式）
+│   ├── commander/SKILL.md          # Agent-07 总指挥
+│   ├── contract-guardian/SKILL.md  # Agent-01 合同卫士
+│   ├── legal-hunter/SKILL.md       # Agent-02 法律猎手
+│   ├── audit-eagle/SKILL.md        # Agent-03 审计鹰眼
+│   ├── tax-butler/SKILL.md         # Agent-04 税务管家
+│   ├── research-scout/SKILL.md     # Agent-05 研究探员
+│   └── due-diligence/SKILL.md      # Agent-06 尽调特工
+├── workspace/                      # ⭐ OpenClaw 工作区配置
+│   ├── AGENTS.md                   # Agent 指令说明
+│   ├── IDENTITY.md                 # 身份与人格
+│   ├── USER.md                     # 用户偏好
+│   └── MEMORY.md                   # 长期记忆
+├── agents/                         # Agent 配置文件（JSON 格式）
 │   ├── commander.json              # Agent-07 总指挥
 │   ├── contract_guardian.json      # Agent-01 合同卫士
 │   ├── legal_hunter.json           # Agent-02 法律猎手
@@ -202,30 +220,14 @@ agent-code-no7/
 │   ├── research_scout.json         # Agent-05 研究探员
 │   └── due_diligence_agent.json    # Agent-06 尽调特工
 ├── prompts/                        # Prompt 模板
-│   ├── contract_review.md          # 合同审查提示词
-│   ├── legal_research.md           # 法律研究提示词
-│   ├── financial_analysis.md       # 财务分析提示词
-│   ├── tax_planning.md             # 税务筹划提示词
-│   ├── industry_research.md        # 行业研究提示词
-│   └── due_diligence.md            # 尽职调查提示词
-├── workflows/                      # 工作流定义
-│   ├── contract_review.json        # 合同审查流程
-│   ├── legal_opinion.json          # 法律意见书流程
-│   ├── audit_report.json           # 审计报告流程
-│   ├── due_diligence.json          # 尽职调查流程
-│   └── industry_report.json        # 行业研究流程
+├── workflows/                      # 工作流定义（JSON）
 ├── knowledge/                      # 知识库配置
-│   ├── legal_knowledge.md          # 法律知识库说明
-│   └── financial_standards.md      # 财务准则知识库说明
 ├── docs/                           # 文档
 │   ├── architecture.md             # 架构设计文档
 │   ├── user_guide.md               # 使用指南
 │   └── demo_script.md              # 演示脚本
 ├── assets/                         # 静态资源
-│   ├── logo.png                    # 项目 Logo
-│   └── screenshots/                # 截图
 └── demo/                           # 演示材料
-    └── video/                      # 演示视频
 ```
 
 ---
@@ -234,11 +236,12 @@ agent-code-no7/
 
 | 组件 | 技术 |
 |------|------|
-| AI 平台 | 腾讯 ClawPro |
-| 大模型 | 腾讯混元 / DeepSeek |
-| Agent 框架 | ClawPro Agent Runtime |
+| AI 平台 | [ClawPro](https://openclawpro.cn/) (OpenClaw 桌面客户端) |
+| 大模型 | 腾讯混元 / DeepSeek / OpenAI / 通义千问 |
+| Agent 框架 | OpenClaw Agent + SKILL.md 技能系统 |
+| 技能生态 | ClawHub 技能市场 (55+ 内置技能) |
 | Prompt 策略 | Chain-of-Thought + ReAct + Reflection |
-| 工作流引擎 | ClawPro DAG Workflow |
+| 多通道接入 | 飞书 / 企业微信 / Telegram / Discord |
 | 文档处理 | PDF/DOCX/XLSX 解析 |
 | 知识库 | RAG (检索增强生成) |
 
