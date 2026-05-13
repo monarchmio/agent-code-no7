@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Agent Code No.7 — 路演PPT</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: #0a0a1a;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Slide Container */
+        .slides { position: relative; width: 100%; height: 100vh; }
+        .slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 100px;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+        .nav button {
+            padding: 10px 20px;
+            background: #1a2a4a;
+            border: 1px solid #00d4ff44;
+            color: #00d4ff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .nav button:hover { background: #0f3460; }
+        .page-num {
+            position: fixed;
+            bottom: 36px;
+            left: 40px;
+            color: #555;
+            font-size: 14px;
+        }
+        .tips {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #444;
+            font-size: 12px;
+        }
+
+        /* Slide Styles */
+        .slide h1 {
+            font-size: 52px;
+            background: linear-gradient(135deg, #00d4ff, #0084ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        .slide h2 {
+            font-size: 38px;
+            color: #fff;
+            margin-bottom: 24px;
+        }
+        .slide h3 {
+            font-size: 28px;
+            color: #00d4ff;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .slide p {
+            font-size: 22px;
+            color: #aaa;
+            line-height: 1.8;
+            text-align: center;
+        }
+        .slide .subtitle {
+            font-size: 26px;
+            color: #ccc;
+            margin-bottom: 40px;
+        }
+
+        /* Cover Slide */
+        .slide.cover .emoji-logo { font-size: 100px; margin-bottom: 20px; }
+        .slide.cover .tagline {
+            font-size: 20px;
+            color: #00d4ff;
+            margin-top: 30px;
+            letter-spacing: 4px;
+        }
+        .slide.cover .meta {
+            margin-top: 60px;
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 20px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+        .card {
+            background: #111830;
+            border: 1px solid #1a2a4a;
+            border-radius: 12px;
+            padding: 28px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-4px); border-color: #00d4ff44; }
+        .card .icon { font-size: 40px; margin-bottom: 12px; }
+        .card h4 { font-size: 18px; color: #fff; margin-bottom: 8px; }
+        .card p { font-size: 14px; color: #888; text-align: center; line-height: 1.6; }
+
+        /* Table */
+        .ppt-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .ppt-table th, .ppt-table td {
+            padding: 16px 20px;
+            border: 1px solid #1a2a4a;
+            text-align: left;
+            font-size: 16px;
+        }
+        .ppt-table th {
+            background: #0f2040;
+            color: #00d4ff;
+            font-size: 15px;
+        }
+        .ppt-table td { color: #ccc; }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            gap: 60px;
+            margin-top: 40px;
+        }
+        .stat { text-align: center; }
+        .stat .number {
+            font-size: 56px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat .label { font-size: 16px; color: #888; margin-top: 8px; }
+
+        /* Architecture */
+        .arch {
+            background: #111830;
+            border-radius: 12px;
+            padding: 30px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            white-space: pre;
+            line-height: 1.5;
+            color: #b0c4de;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .arch .highlight { color: #00d4ff; }
+
+        /* Flow */
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .flow-item {
+            background: #111830;
+            border: 1px solid #1a2a4a;
+            border-radius: 8px;
+            padding: 16px 24px;
+            text-align: center;
+        }
+        .flow-item .step-num {
+            font-size: 12px;
+            color: #00d4ff;
+            margin-bottom: 4px;
+        }
+        .flow-item .step-text { font-size: 15px; }
+        .flow-arrow { font-size: 24px; color: #00d4ff; }
+
+        /* Comparison */
+        .compare {
+            display: flex;
+            gap: 40px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .compare-col {
+            flex: 1;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        .compare-col.old {
+            background: #1a1010;
+            border: 1px solid #442222;
+        }
+        .compare-col.new {
+            background: #101a1a;
+            border: 1px solid #224444;
+        }
+        .compare-col h4 {
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+        .compare-col.old h4 { color: #ff6666; }
+        .compare-col.new h4 { color: #00ff88; }
+        .compare-col ul { list-style: none; }
+        .compare-col li {
+            padding: 8px 0;
+            font-size: 16px;
+            color: #bbb;
+        }
+
+        /* Bullet list */
+        .bullet-list {
+            width: 100%;
+            text-align: left;
+            margin-top: 20px;
+        }
+        .bullet-list li {
+            font-size: 20px;
+            padding: 12px 0;
+            list-style: none;
+            color: #ccc;
+            border-bottom: 1px solid #1a2a4a;
+        }
+        .bullet-list li strong { color: #00d4ff; }
+
+        /* End slide */
+        .slide.end .big-emoji { font-size: 120px; margin-bottom: 30px; }
+        .slide.end .cta {
+            margin-top: 40px;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #00d4ff, #0084ff);
+            border-radius: 8px;
+            font-size: 18px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="tips">← → 翻页 | F11 全屏 | F5 从头开始</div>
+<div class="page-num" id="pageNum">1 / 10</div>
+
+<div class="nav">
+    <button onclick="prevSlide()">← 上一页</button>
+    <button onclick="nextSlide()">下一页 →</button>
+</div>
+
+<div class="slides">
+
+    <!-- Slide 1: Cover -->
+    <div class="slide cover active" data-index="0">
+        <div class="emoji-logo">🕵️</div>
+        <h1>Agent Code No.7</h1>
+        <div class="subtitle">你的AI特工局</div>
+        <p>专为律所 · 会所 · 咨询公司打造的AI特工团队<br>全天候执行高难度办公任务，7×24小时提效引擎</p>
+        <div class="tagline">每一次任务，使命必达</div>
+        <div class="meta">腾讯黑客松 · ClawPro 平台应用</div>
+    </div>
+
+    <!-- Slide 2: Pain Points -->
+    <div class="slide" data-index="1">
+        <h2>行业痛点</h2>
+        <p style="margin-bottom:30px">专业服务行业面临的效率困境</p>
+        <div class="grid grid-3">
+            <div class="card">
+                <div class="icon">🏛</div>
+                <h4>律所</h4>
+                <p>合同审查 4-8小时/份<br>法规检索 效率低下<br>重复劳动消耗人才</p>
+            </div>
+            <div class="card">
+                <div class="icon">🏢</div>
+                <h4>会计师事务所</h4>
+                <p>审计底稿手工填写<br>财报分析依赖Excel<br>异常发现靠经验</p>
+            </div>
+            <div class="card">
+                <div class="icon">📊</div>
+                <h4>咨询公司</h4>
+                <p>行研报告周期1-2周<br>数据来源散乱<br>尽调耗费大量人力</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Solution -->
+    <div class="slide" data-index="2">
+        <h2>解决方案：AI特工局</h2>
+        <p style="margin-bottom:30px">7位专业AI特工，各司其职，协同作战</p>
+        <div class="stats">
+            <div class="stat">
+                <div class="number">7</div>
+                <div class="label">AI特工</div>
+            </div>
+            <div class="stat">
+                <div class="number">6</div>
+                <div class="label">专业领域</div>
+            </div>
+            <div class="stat">
+                <div class="number">5</div>
+                <div class="label">智能工作流</div>
+            </div>
+            <div class="stat">
+                <div class="number">95%+</div>
+                <div class="label">准确率</div>
+            </div>
+            <div class="stat">
+                <div class="number">100x</div>
+                <div class="label">效率提升</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Agent Team -->
+    <div class="slide" data-index="3">
+        <h2>特工团队</h2>
+        <div class="grid grid-4" style="margin-top:20px">
+            <div class="card">
+                <div class="icon">🎯</div>
+                <h4>总指挥</h4>
+                <p>任务编排<br>特工调度<br>质量把控</p>
+            </div>
+            <div class="card">
+                <div class="icon">📜</div>
+                <h4>合同卫士</h4>
+                <p>合同审查<br>风险识别<br>修改建议</p>
+            </div>
+            <div class="card">
+                <div class="icon">⚖️</div>
+                <h4>法律猎手</h4>
+                <p>法规检索<br>案例分析<br>法律意见</p>
+            </div>
+            <div class="card">
+                <div class="icon">🦅</div>
+                <h4>审计鹰眼</h4>
+                <p>财报分析<br>异常检测<br>底稿生成</p>
+            </div>
+        </div>
+        <div class="grid grid-3" style="margin-top:20px;max-width:75%">
+            <div class="card">
+                <div class="icon">🏦</div>
+                <h4>税务管家</h4>
+                <p>税务筹划<br>合规审查</p>
+            </div>
+            <div class="card">
+                <div class="icon">🔭</div>
+                <h4>研究探员</h4>
+                <p>行业研究<br>竞品分析</p>
+            </div>
+            <div class="card">
+                <div class="icon">🔍</div>
+                <h4>尽调特工</h4>
+                <p>尽职调查<br>风险评估</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Architecture -->
+    <div class="slide" data-index="4">
+        <h2>技术架构</h2>
+        <div class="arch"><span class="highlight">用户层</span>    ClawPro 桌面端 / 飞书 / 企业微信 / Telegram
+         │
+<span class="highlight">编排层</span>    🎯 Agent-07 总指挥 (任务理解→拆解→分发→汇总)
+         │
+<span class="highlight">能力层</span>    📜01  ⚖️02  🦅03  🏦04  🔭05  🔍06  ← 专业特工
+         │
+<span class="highlight">工具层</span>    文档解析 / 法规库 / 搜索引擎 / 数据分析 / RAG知识库
+         │
+<span class="highlight">模型层</span>    腾讯混元 / DeepSeek / 通义千问 (可热切换)</div>
+    </div>
+
+    <!-- Slide 6: Demo - Contract -->
+    <div class="slide" data-index="5">
+        <h2>演示：合同智能审查</h2>
+        <p style="margin-bottom:20px">传统4-8小时 → Agent Code No.7 仅需2分钟</p>
+        <div class="flow">
+            <div class="flow-item"><div class="step-num">Step 1</div><div class="step-text">📄 上传合同</div></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item"><div class="step-num">Step 2</div><div class="step-text">🎯 总指挥拆解</div></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item"><div class="step-num">Step 3</div><div class="step-text">📜 逐条扫描</div></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item"><div class="step-num">Step 4</div><div class="step-text">⚖️ 法规验证</div></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item"><div class="step-num">Step 5</div><div class="step-text">📊 风险报告</div></div>
+        </div>
+        <div class="compare" style="margin-top:40px">
+            <div class="compare-col old">
+                <h4>❌ 传统方式</h4>
+                <ul>
+                    <li>• 人工逐条对比 4-8小时</li>
+                    <li>• 依赖律师个人经验</li>
+                    <li>• 易遗漏风险条款</li>
+                    <li>• 没有标准化输出</li>
+                </ul>
+            </div>
+            <div class="compare-col new">
+                <h4>✅ Agent Code No.7</h4>
+                <ul>
+                    <li>• 2分钟完成全文扫描</li>
+                    <li>• 多维度风险评分</li>
+                    <li>• 100%条款覆盖率</li>
+                    <li>• 结构化报告+修改建议</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Demo - Due Diligence -->
+    <div class="slide" data-index="6">
+        <h2>演示：多特工协作尽调</h2>
+        <p style="margin-bottom:20px">6位特工同时出击，5分钟完成初步尽调</p>
+        <table class="ppt-table">
+            <tr><th>特工</th><th>任务</th><th>输出</th></tr>
+            <tr><td>🔍 尽调特工</td><td>工商信息核查</td><td>企业画像 + 关联图谱</td></tr>
+            <tr><td>⚖️ 法律猎手</td><td>诉讼记录检索</td><td>诉讼清单 + 合规评估</td></tr>
+            <tr><td>🦅 审计鹰眼</td><td>财务数据分析</td><td>财务健康度 + 异常标注</td></tr>
+            <tr><td>🔭 研究探员</td><td>行业地位评估</td><td>竞争力分析 + 市场份额</td></tr>
+            <tr><td>🏦 税务管家</td><td>税务合规审查</td><td>税务风险评估</td></tr>
+            <tr><td>🎯 总指挥</td><td>结果汇总评级</td><td>综合尽调报告 🟡🔴🟢</td></tr>
+        </table>
+    </div>
+
+    <!-- Slide 8: Tech Highlights -->
+    <div class="slide" data-index="7">
+        <h2>技术亮点</h2>
+        <ul class="bullet-list">
+            <li><strong>🧠 SKILL.md 标准格式</strong> — 即插即用，直接导入 ClawPro 生态</li>
+            <li><strong>🔄 多模型热切换</strong> — 支持混元/DeepSeek/千问，按需选择最优模型</li>
+            <li><strong>⚡ 并行任务编排</strong> — 多特工同时工作，DAG 工作流引擎调度</li>
+            <li><strong>📡 多通道接入</strong> — 飞书/企微/Telegram，无缝融入企业工作流</li>
+            <li><strong>🔒 安全合规</strong> — 数据不出域，输出标注免责，符合保密要求</li>
+            <li><strong>📚 RAG 知识增强</strong> — 法规库 + 财务准则库，确保专业准确性</li>
+        </ul>
+    </div>
+
+    <!-- Slide 9: Roadmap -->
+    <div class="slide" data-index="8">
+        <h2>未来规划</h2>
+        <div class="grid grid-3" style="margin-top:30px">
+            <div class="card" style="border-color:#00d4ff44">
+                <div class="icon">🚀</div>
+                <h4>短期 (1-3月)</h4>
+                <p>接入企查查/裁判文书网<br>增强数据源质量<br>优化Prompt准确率</p>
+            </div>
+            <div class="card" style="border-color:#00ff8844">
+                <div class="icon">📈</div>
+                <h4>中期 (3-6月)</h4>
+                <p>新增投行特工/IP特工<br>支持英文合同<br>企业版SaaS</p>
+            </div>
+            <div class="card" style="border-color:#ffaa0044">
+                <div class="icon">🌍</div>
+                <h4>长期 (6-12月)</h4>
+                <p>开放特工市场<br>用户自定义特工<br>全球化多语言支持</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: End -->
+    <div class="slide end" data-index="9">
+        <div class="big-emoji">🕵️</div>
+        <h1>Agent Code No.7</h1>
+        <h2 style="color:#ccc;font-size:28px">每一次任务，使命必达</h2>
+        <p style="font-size:18px;margin-top:20px">
+            GitHub: github.com/monarchmio/agent-code-no7<br>
+            平台: ClawPro (openclawpro.cn)
+        </p>
+        <div class="cta">感谢评审 · 期待交流</div>
+    </div>
+
+</div>
+
+<script>
+    let current = 0;
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+
+    function showSlide(index) {
+        slides.forEach(s => s.classList.remove('active'));
+        slides[index].classList.add('active');
+        document.getElementById('pageNum').textContent = `${index + 1} / ${total}`;
+    }
+
+    function nextSlide() {
+        if (current < total - 1) { current++; showSlide(current); }
+    }
+    function prevSlide() {
+        if (current > 0) { current--; showSlide(current); }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        if (e.key === 'F5') { e.preventDefault(); current = 0; showSlide(0); }
+    });
+
+    // Touch support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
+    document.addEventListener('touchend', e => {
+        const diff = e.changedTouches[0].clientX - touchStartX;
+        if (diff < -50) nextSlide();
+        if (diff > 50) prevSlide();
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "agent-code-no7-due-diligence",
+  "version": "1.0.0",
+  "description": "Agent Code No.7 尽调特工 - 尽职调查与风险评估",
+  "keywords": ["agent", "due-diligence", "investigation", "risk", "assessment"],
+  "author": "monarchmio",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/monarchmio/agent-code-no7"
+  }
+}

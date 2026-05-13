@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Code No.7 — AI特工局</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #16213e;
+            border-right: 1px solid #2a2a4a;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #2a2a4a;
+            text-align: center;
+        }
+        .sidebar-header h1 {
+            font-size: 18px;
+            color: #00d4ff;
+            margin-bottom: 4px;
+        }
+        .sidebar-header p {
+            font-size: 12px;
+            color: #888;
+        }
+        .agent-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .agent-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .agent-item:hover { background: #1f3460; }
+        .agent-item.active { background: #0f3460; border: 1px solid #00d4ff33; }
+        .agent-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .agent-info h3 { font-size: 13px; color: #fff; }
+        .agent-info p { font-size: 11px; color: #888; margin-top: 2px; }
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #00ff88;
+            margin-left: auto;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Main Chat Area */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            padding: 16px 24px;
+            background: #16213e;
+            border-bottom: 1px solid #2a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chat-header .agent-badge {
+            padding: 4px 10px;
+            background: #0f3460;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #00d4ff;
+            border: 1px solid #00d4ff44;
+        }
+        .chat-header h2 { font-size: 16px; }
+        .platform-badge {
+            margin-left: auto;
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .platform-badge::before {
+            content: '';
+            width: 8px; height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+        }
+
+        /* Messages */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            line-height: 1.6;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user {
+            align-self: flex-end;
+            background: #0f3460;
+            border: 1px solid #00d4ff33;
+            color: #e8f4ff;
+        }
+        .message.agent {
+            align-self: flex-start;
+            background: #1e2a4a;
+            border: 1px solid #333;
+        }
+        .message.agent .agent-name {
+            font-size: 12px;
+            color: #00d4ff;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .message.system {
+            align-self: center;
+            background: transparent;
+            color: #666;
+            font-size: 12px;
+            padding: 8px;
+        }
+        .message table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+        .message th, .message td {
+            border: 1px solid #333;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .message th {
+            background: #0f3460;
+            color: #00d4ff;
+        }
+        .message .risk-high { color: #ff4444; font-weight: bold; }
+        .message .risk-mid { color: #ffaa00; font-weight: bold; }
+        .message .risk-low { color: #00ff88; }
+        .message .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffaa00;
+            display: inline-block;
+            margin: 8px 0;
+        }
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+        .typing-indicator span {
+            width: 6px; height: 6px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: typing 1.2s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 16px 24px;
+            background: #16213e;
+            border-top: 1px solid #2a2a4a;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-area input:focus { border-color: #00d4ff; }
+        .input-area button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, #00d4ff, #0084ff);
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.1s;
+        }
+        .input-area button:hover { transform: scale(1.02); }
+        .input-area button:active { transform: scale(0.98); }
+
+        /* Workflow Progress */
+        .workflow-progress {
+            background: #0f3460;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 8px 0;
+        }
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+        .workflow-step .step-icon {
+            width: 20px;
+            text-align: center;
+        }
+        .workflow-step.done .step-icon { color: #00ff88; }
+        .workflow-step.running .step-icon { color: #00d4ff; }
+        .workflow-step.pending .step-icon { color: #555; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>🕵️ Agent Code No.7</h1>
+            <p>AI特工局 · ClawPro</p>
+        </div>
+        <div class="agent-list">
+            <div class="agent-item active">
+                <div class="agent-icon" style="background:#1a3a6a">🎯</div>
+                <div class="agent-info">
+                    <h3>总指挥 Commander</h3>
+                    <p>Agent-07 · 任务编排</p>
+                </div>
+                <div class="status-dot"></div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-icon" style="background:#2a1a3a">📜</div>
+                <div class="agent-info">
+                    <h3>合同卫士</h3>
+                    <p>Agent-01 · 合同审查</p>
+                </div>
+                <div class="status-dot"></div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-icon" style="background:#1a2a1a">⚖️</div>
+                <div class="agent-info">
+                    <h3>法律猎手</h3>
+                    <p>Agent-02 · 法规检索</p>
+                </div>
+                <div class="status-dot"></div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-icon" style="background:#3a2a1a">🦅</div>
+                <div class="agent-info">
+                    <h3>审计鹰眼</h3>
+                    <p>Agent-03 · 财务分析</p>
+                </div>
+                <div class="status-dot"></div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-icon" style="background:#1a3a2a">🏦</div>
+                <div class="agent-info">
+                    <h3>税务管家</h3>
+                    <p>Agent-04 · 税务筹划</p>
+                </div>
+                <div class="status-dot"></div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-icon" style="background:#2a2a3a">🔭</div>
+                <div class="agent-info">
+                    <h3>研究探员</h3>
+                    <p>Agent-05 · 行业研究</p>
+                </div>
+                <div class="status-dot"></div>
+            </div>
+            <div class="agent-item">
+                <div class="agent-icon" style="background:#3a1a2a">🔍</div>
+                <div class="agent-info">
+                    <h3>尽调特工</h3>
+                    <p>Agent-06 · 尽职调查</p>
+                </div>
+                <div class="status-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="chat-header">
+            <h2>🕵️ Agent Code No.7</h2>
+            <span class="agent-badge">7 位特工就绪</span>
+            <div class="platform-badge">ClawPro 已连接</div>
+        </div>
+
+        <div class="messages" id="messages">
+            <div class="message system">—— 新对话开始 ——</div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="输入任务指令，总指挥会自动调度特工..." />
+            <button onclick="handleSend()">发送</button>
+        </div>
+    </div>
+
+    <script>
+        const demos = {
+            "合同": {
+                steps: [
+                    { type: "agent", name: "🎯 Agent-07 总指挥", text: "收到！我已分析您的需求，正在调度特工...", delay: 800 },
+                    { type: "system", text: "📡 正在调度 Agent-01 合同卫士 + Agent-02 法律猎手...", delay: 1200 },
+                    { type: "workflow", steps: [
+                        { text: "文档解析与结构化提取", status: "done" },
+                        { text: "条款逐条风险扫描", status: "done" },
+                        { text: "法规合规性交叉验证", status: "done" },
+                        { text: "生成风险评估报告", status: "done" }
+                    ], delay: 2000 },
+                    { type: "agent", name: "📜 Agent-01 合同卫士", html: `
+                        <strong>📋 合同审查报告</strong><br><br>
+                        综合风险评分：<span class="score">68/100</span>（中等风险）<br><br>
+                        <table>
+                            <tr><th>条款</th><th>风险等级</th><th>说明</th></tr>
+                            <tr><td>第3条 验收条款</td><td class="risk-high">🔴 高</td><td>逾期视为验收通过，对甲方极为不利</td></tr>
+                            <tr><td>第8条 违约金</td><td class="risk-high">🔴 高</td><td>5‰/日违约金偏高，建议设上限</td></tr>
+                            <tr><td>第5条 知识产权</td><td class="risk-mid">🟡 中</td><td>归属约定模糊，需明确区分</td></tr>
+                            <tr><td>第12条 争议解决</td><td class="risk-low">🟢 低</td><td>约定仲裁，条款完整</td></tr>
+                        </table>
+                        <br><strong>📝 修改建议：</strong><br>
+                        1. 第3条：建议改为「30个工作日内书面确认，逾期未回复的催告后15日视为通过」<br>
+                        2. 第8条：建议增加违约金上限「不超过合同总金额的20%」<br>
+                        3. 第5条：明确「合作前各方已有的知识产权归原方所有；合作中产生的共有知识产权按贡献比例分配」<br>
+                        <br><em style="color:#888">⚠️ 本分析仅供参考，重大合同请咨询执业律师</em>
+                    `, delay: 3000 },
+                    { type: "agent", name: "🎯 Agent-07 总指挥", text: "审查完成 ✅ 发现 2 项高风险条款，建议优先修改第3条和第8条。需要我生成完整的修改版合同吗？", delay: 1500 }
+                ]
+            },
+            "尽调": {
+                steps: [
+                    { type: "agent", name: "🎯 Agent-07 总指挥", text: "了解，我将调度6位特工进行全面尽职调查...", delay: 800 },
+                    { type: "system", text: "📡 正在调度全部特工并行工作...", delay: 1000 },
+                    { type: "workflow", steps: [
+                        { text: "Agent-06 🔍 工商信息核查", status: "done" },
+                        { text: "Agent-02 ⚖️ 诉讼记录检索", status: "done" },
+                        { text: "Agent-03 🦅 财务数据分析", status: "done" },
+                        { text: "Agent-05 🔭 行业地位评估", status: "done" },
+                        { text: "Agent-04 🏦 税务合规审查", status: "done" },
+                        { text: "Agent-07 🎯 结果汇总与评级", status: "done" }
+                    ], delay: 2500 },
+                    { type: "agent", name: "🔍 Agent-06 尽调特工", html: `
+                        <strong>🏢 尽职调查报告摘要</strong><br><br>
+                        <strong>目标企业：</strong>XX科技有限公司<br>
+                        <strong>综合评级：</strong><span style="color:#ffaa00;font-weight:bold">🟡 中等风险</span><br><br>
+                        <table>
+                            <tr><th>维度</th><th>评级</th><th>关键发现</th></tr>
+                            <tr><td>工商合规</td><td class="risk-low">🟢</td><td>注册资本实缴到位，资质齐全</td></tr>
+                            <tr><td>诉讼风险</td><td class="risk-mid">🟡</td><td>存在2起未结劳动争议</td></tr>
+                            <tr><td>财务健康</td><td class="risk-low">🟢</td><td>营收增长30%，现金流充裕</td></tr>
+                            <tr><td>知识产权</td><td class="risk-high">🔴</td><td>核心专利即将到期，续展风险</td></tr>
+                            <tr><td>关联交易</td><td class="risk-mid">🟡</td><td>与实控人关联企业有大额往来</td></tr>
+                        </table>
+                        <br><strong>⚠️ 重大关注事项：</strong><br>
+                        1. 3项核心专利将于2025年12月到期，需确认续展安排<br>
+                        2. 与关联方年交易额占营收35%，需关注定价公允性<br>
+                        <br><em style="color:#888">⚠️ 本报告基于公开信息，不替代现场尽调</em>
+                    `, delay: 3500 },
+                    { type: "agent", name: "🎯 Agent-07 总指挥", text: "尽调完成 ✅ 综合评级为中等风险（🟡），建议重点关注知识产权到期和关联交易问题。需要我生成详细的尽调备忘录吗？", delay: 1500 }
+                ]
+            },
+            "法律": {
+                steps: [
+                    { type: "agent", name: "🎯 Agent-07 总指挥", text: "收到法律研究请求，正在调度法律猎手...", delay: 800 },
+                    { type: "system", text: "📡 Agent-02 法律猎手 已接收任务", delay: 1000 },
+                    { type: "workflow", steps: [
+                        { text: "法律问题定性与分析", status: "done" },
+                        { text: "相关法规检索", status: "done" },
+                        { text: "判例分析与趋势归纳", status: "done" },
+                        { text: "法律意见输出", status: "done" }
+                    ], delay: 2000 },
+                    { type: "agent", name: "⚖️ Agent-02 法律猎手", html: `
+                        <strong>📌 法律研究报告</strong><br><br>
+                        <strong>问题：</strong>公司能否单方面调整员工工作地点（上海→苏州）？<br>
+                        <strong>结论：</strong><span style="color:#ffaa00">需协商一致，单方调整存在法律风险</span><br><br>
+                        <strong>📖 法律依据：</strong><br>
+                        • 《劳动合同法》第35条：变更劳动合同应当协商一致<br>
+                        • 《劳动合同法》第17条：工作地点为劳动合同必备条款<br>
+                        • 最高法《劳动争议司法解释四》第11条<br><br>
+                        <strong>📋 相关判例：</strong><br>
+                        • (2023)沪01民终12345号：调整工作地点超出合同约定范围，用人单位败诉<br>
+                        • (2024)苏05民终6789号：合同约定「全国范围」，合理调动获法院支持<br><br>
+                        <strong>💡 建议：</strong><br>
+                        1. 审查劳动合同中工作地点条款的具体约定<br>
+                        2. 如合同约定为「上海」，需与员工协商并签署变更协议<br>
+                        3. 如合同约定为「长三角地区」等弹性条款，可能构成合理调动<br>
+                        4. 建议提供交通补贴等配套措施，降低争议风险<br>
+                        <br><em style="color:#888">⚠️ 本研究仅供参考，不构成正式法律意见</em>
+                    `, delay: 3000 },
+                    { type: "agent", name: "🎯 Agent-07 总指挥", text: "法律研究完成 ✅ 核心结论：单方调整有风险，建议协商一致。需要我进一步生成法律意见书框架吗？", delay: 1500 }
+                ]
+            }
+        };
+
+        const presetQueries = [
+            "请帮我审查这份技术服务合同，重点关注验收条款和违约责任",
+            "对XX科技公司做一个初步尽职调查",
+            "公司能否单方面调整员工工作地点？从上海调到苏州"
+        ];
+
+        let currentDemo = null;
+        let isRunning = false;
+
+        function getMatchingDemo(text) {
+            if (text.includes("合同") || text.includes("审查")) return "合同";
+            if (text.includes("尽调") || text.includes("尽职") || text.includes("调查")) return "尽调";
+            if (text.includes("法律") || text.includes("法规") || text.includes("工作地点") || text.includes("员工")) return "法律";
+            return "合同"; // default
+        }
+
+        function addMessage(type, content, name) {
+            const messagesDiv = document.getElementById('messages');
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+
+            if (type === 'agent') {
+                msg.innerHTML = `<div class="agent-name">${name}</div>${content}`;
+            } else if (type === 'system') {
+                msg.textContent = content;
+            } else if (type === 'user') {
+                msg.textContent = content;
+            }
+
+            messagesDiv.appendChild(msg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            return msg;
+        }
+
+        function addWorkflow(steps) {
+            const messagesDiv = document.getElementById('messages');
+            const msg = document.createElement('div');
+            msg.className = 'message agent';
+
+            let html = '<div class="agent-name">🎯 Agent-07 总指挥</div>';
+            html += '<div class="workflow-progress">';
+            steps.forEach(step => {
+                const icon = step.status === 'done' ? '✅' : step.status === 'running' ? '⏳' : '⬜';
+                html += `<div class="workflow-step ${step.status}"><span class="step-icon">${icon}</span>${step.text}</div>`;
+            });
+            html += '</div>';
+
+            msg.innerHTML = html;
+            messagesDiv.appendChild(msg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function addTyping() {
+            const messagesDiv = document.getElementById('messages');
+            const msg = document.createElement('div');
+            msg.className = 'message agent';
+            msg.id = 'typing';
+            msg.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            messagesDiv.appendChild(msg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function removeTyping() {
+            const el = document.getElementById('typing');
+            if (el) el.remove();
+        }
+
+        async function runDemo(demoKey) {
+            if (isRunning) return;
+            isRunning = true;
+            const demo = demos[demoKey];
+
+            for (const step of demo.steps) {
+                addTyping();
+                await new Promise(r => setTimeout(r, step.delay));
+                removeTyping();
+
+                if (step.type === 'agent') {
+                    if (step.html) {
+                        addMessage('agent', step.html, step.name);
+                    } else {
+                        addMessage('agent', step.text, step.name);
+                    }
+                } else if (step.type === 'system') {
+                    addMessage('system', step.text);
+                } else if (step.type === 'workflow') {
+                    addWorkflow(step.steps);
+                }
+            }
+            isRunning = false;
+        }
+
+        function handleSend() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text || isRunning) return;
+
+            addMessage('user', text);
+            input.value = '';
+
+            const demoKey = getMatchingDemo(text);
+            runDemo(demoKey);
+        }
+
+        document.getElementById('userInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') handleSend();
+        });
+
+        // Auto-start first demo after 1s
+        setTimeout(() => {
+            document.getElementById('userInput').value = presetQueries[0];
+        }, 500);
+    </script>
+</body>
+</html>

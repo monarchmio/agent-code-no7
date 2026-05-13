@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Agent Code No.7 — 作品说明文档</title>
+    <style>
+        @page { size: A4; margin: 2cm; }
+        @media print {
+            body { font-size: 11pt; }
+            .page-break { page-break-before: always; }
+            .no-print { display: none; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            color: #333;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #fff;
+        }
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 24px;
+            background: #0066ff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        /* Cover */
+        .cover {
+            text-align: center;
+            padding: 80px 0 60px;
+            border-bottom: 3px solid #0066ff;
+            margin-bottom: 40px;
+        }
+        .cover .emoji-logo { font-size: 64px; margin-bottom: 20px; }
+        .cover h1 { font-size: 36px; color: #1a1a2e; margin-bottom: 8px; }
+        .cover h2 { font-size: 20px; color: #0066ff; font-weight: normal; margin-bottom: 30px; }
+        .cover .meta { color: #888; font-size: 14px; line-height: 2; }
+
+        /* Sections */
+        h2 {
+            font-size: 22px;
+            color: #1a1a2e;
+            border-left: 4px solid #0066ff;
+            padding-left: 12px;
+            margin: 36px 0 16px;
+        }
+        h3 { font-size: 17px; color: #333; margin: 20px 0 10px; }
+        p { margin-bottom: 12px; text-indent: 2em; }
+        p.no-indent { text-indent: 0; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px 14px;
+            text-align: left;
+        }
+        th { background: #f0f4ff; color: #333; font-weight: 600; }
+
+        ul, ol { margin: 12px 0 12px 2em; }
+        li { margin-bottom: 6px; }
+
+        .highlight-box {
+            background: #f0f7ff;
+            border: 1px solid #cce0ff;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+
+        .arch-diagram {
+            background: #1a1a2e;
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">📄 导出 PDF</button>
+
+<!-- 封面 -->
+<div class="cover">
+    <div class="emoji-logo">🕵️</div>
+    <h1>Agent Code No.7</h1>
+    <h2>你的AI特工局 — 作品说明文档</h2>
+    <div class="meta">
+        赛事：腾讯黑客松<br>
+        平台：ClawPro (OpenClaw)<br>
+        团队：Agent Code No.7 Team<br>
+        日期：2025年5月
+    </div>
+</div>
+
+<!-- 正文 -->
+<h2>一、项目概述</h2>
+
+<p><strong>Agent Code No.7</strong> 是一个基于腾讯 ClawPro 平台构建的多智能体协作系统，以"AI特工局"为核心概念，专为律所、会计师事务所、咨询公司等专业服务机构打造一站式智能办公解决方案。</p>
+
+<p>系统采用"总指挥 + 6位专业特工"的分层架构，每位特工深耕一个专业领域，通过总指挥的智能编排实现多特工协作，将传统需要数小时的专业任务压缩到分钟级完成。</p>
+
+<div class="highlight-box">
+    <strong>核心价值主张：</strong>用 AI 特工团队重新定义专业服务效率 —— 7位AI特工，覆盖6大专业领域，5个智能工作流，全天候 7×24 执行高难度办公任务。
+</div>
+
+<h2>二、痛点分析</h2>
+
+<table>
+    <tr><th>行业</th><th>核心痛点</th><th>传统方案</th><th>Agent Code No.7 方案</th></tr>
+    <tr><td>律所</td><td>合同审查耗时、法规检索低效</td><td>人工逐条对比，4-8小时/份</td><td>合同特工秒级扫描 + 风险标注，2分钟完成</td></tr>
+    <tr><td>会计师事务所</td><td>审计底稿繁琐、财报分析复杂</td><td>Excel手工处理，易出错</td><td>审计特工自动核验 + 异常预警</td></tr>
+    <tr><td>咨询公司</td><td>行研报告周期长、数据散乱</td><td>多人协作拼凑，1-2周</td><td>研究特工一键生成深度报告</td></tr>
+    <tr><td>投资机构</td><td>尽调耗费大量人力</td><td>多团队分头调查，1-3个月</td><td>6位特工并行调查，5分钟出报告</td></tr>
+</table>
+
+<h2>三、特工团队</h2>
+
+<table>
+    <tr><th>代号</th><th>名称</th><th>专长领域</th><th>核心能力</th></tr>
+    <tr><td>Agent-07</td><td>总指挥 Commander</td><td>任务编排</td><td>需求理解、任务拆解、特工调度、质量把控</td></tr>
+    <tr><td>Agent-01</td><td>合同卫士 Contract Guardian</td><td>合同审查</td><td>条款分析、风险识别、合规检查、修改建议</td></tr>
+    <tr><td>Agent-02</td><td>法律猎手 Legal Hunter</td><td>法律研究</td><td>法规检索、案例分析、法律意见书生成</td></tr>
+    <tr><td>Agent-03</td><td>审计鹰眼 Audit Eagle</td><td>财务审计</td><td>财报分析、异常检测、审计底稿生成</td></tr>
+    <tr><td>Agent-04</td><td>税务管家 Tax Butler</td><td>税务筹划</td><td>税务优化、政策匹配、合规审查</td></tr>
+    <tr><td>Agent-05</td><td>研究探员 Research Scout</td><td>行业研究</td><td>市场分析、竞品追踪、深度报告生成</td></tr>
+    <tr><td>Agent-06</td><td>尽调特工 Due Diligence</td><td>尽职调查</td><td>企业扫描、关联图谱、风险评级</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>四、技术架构</h2>
+
+<div class="arch-diagram">┌─────────────────────────────────────────────────┐
+│                   用户交互层                      │
+│         ClawPro 桌面端 / 飞书 / 企业微信          │
+└──────────────────────┬──────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────┐
+│              🕵️ Agent-07 总指挥                   │
+│         任务理解 → 拆解 → 分发 → 汇总             │
+└──┬────┬────┬────┬────┬────┬─────────────────────┘
+   │    │    │    │    │    │
+   ▼    ▼    ▼    ▼    ▼    ▼
+┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐
+│ 01 ││ 02 ││ 03 ││ 04 ││ 05 ││ 06 │  ← 专业特工
+│合同││法律││审计││税务││研究││尽调│
+└──┬─┘└──┬─┘└──┬─┘└──┬─┘└──┬─┘└──┬─┘
+   │     │     │     │     │     │
+┌──▼─────▼─────▼─────▼─────▼─────▼───┐
+│              工具与知识层              │
+│  📚 法规库  📊 财务工具  🔍 搜索引擎  │
+│  📝 文档生成  📈 数据分析  🗂 模板库   │
+└─────────────────────────────────────┘</div>
+
+<h3>4.1 技术选型</h3>
+
+<table>
+    <tr><th>组件</th><th>技术方案</th></tr>
+    <tr><td>AI 平台</td><td>ClawPro (OpenClaw 桌面客户端)</td></tr>
+    <tr><td>大语言模型</td><td>腾讯混元 / DeepSeek / 通义千问（可切换）</td></tr>
+    <tr><td>Agent 框架</td><td>OpenClaw Agent + SKILL.md 技能系统</td></tr>
+    <tr><td>Prompt 策略</td><td>Chain-of-Thought + ReAct + Reflection</td></tr>
+    <tr><td>知识增强</td><td>RAG 检索增强生成</td></tr>
+    <tr><td>多通道接入</td><td>飞书 / 企业微信 / Telegram / Discord</td></tr>
+</table>
+
+<h3>4.2 核心设计理念</h3>
+
+<ul>
+    <li><strong>专精分工</strong>：每位特工深耕一个领域，确保专业性和准确率</li>
+    <li><strong>智能编排</strong>：总指挥根据任务性质动态调度最优特工组合</li>
+    <li><strong>并行协作</strong>：多特工可同时工作，大幅缩短任务时间</li>
+    <li><strong>质量把控</strong>：总指挥对所有输出进行审核和汇总</li>
+    <li><strong>可扩展性</strong>：新增特工只需添加 SKILL.md，无需改动核心架构</li>
+</ul>
+
+<h2>五、工作流设计</h2>
+
+<p>系统预设了5个标准化工作流，覆盖最高频的专业服务场景：</p>
+
+<table>
+    <tr><th>工作流</th><th>参与特工</th><th>典型耗时</th><th>传统耗时</th></tr>
+    <tr><td>合同智能审查</td><td>Commander + 合同卫士 + 法律猎手</td><td>~2分钟</td><td>4-8小时</td></tr>
+    <tr><td>法律意见书生成</td><td>Commander + 法律猎手</td><td>~3分钟</td><td>1-2天</td></tr>
+    <tr><td>审计分析报告</td><td>Commander + 审计鹰眼 + 税务管家</td><td>~5分钟</td><td>2-5天</td></tr>
+    <tr><td>全面尽职调查</td><td>Commander + 全部6位特工</td><td>~5分钟</td><td>1-3个月</td></tr>
+    <tr><td>行业深度研究</td><td>Commander + 研究探员 + 法律猎手</td><td>~5分钟</td><td>1-2周</td></tr>
+</table>
+
+<h2>六、演示场景</h2>
+
+<h3>场景1：合同智能审查</h3>
+<p class="no-indent">用户上传一份技术服务合同 → 总指挥拆解任务 → 合同卫士逐条分析条款 → 法律猎手交叉验证法规合规性 → 输出风险评估报告（含风险评分、高风险条款标注、修改建议）。全程约2分钟，传统人工需4-8小时。</p>
+
+<h3>场景2：多特工协作尽调</h3>
+<p class="no-indent">用户输入目标公司名称 → 总指挥分配任务给6位特工 → 工商核查、诉讼检索、财务分析、行业评估、税务审查并行进行 → 汇总输出尽调报告（含关联图谱、风险矩阵、综合评级）。全程约5分钟。</p>
+
+<h3>场景3：智能法律研究</h3>
+<p class="no-indent">用户提出法律问题 → 法律猎手检索法规和判例 → 多角度分析正反观点 → 输出结构化法律研究报告。帮助律师快速形成法律意见。</p>
+
+<h2>七、项目亮点</h2>
+
+<ol>
+    <li><strong>特工局概念创新</strong>：将AI Agent拟人化为特工，降低用户认知门槛，提升使用体验</li>
+    <li><strong>深度行业定制</strong>：每位特工的Prompt、知识库、工具集均针对专业服务场景深度优化</li>
+    <li><strong>多特工协作</strong>：支持多特工并行工作，复杂任务自动编排，远超单Agent能力上限</li>
+    <li><strong>即插即用</strong>：基于 SKILL.md 标准格式，Skills 可直接导入 ClawPro，开箱即用</li>
+    <li><strong>多通道接入</strong>：支持飞书、企业微信等企业级通道，无缝融入现有工作流</li>
+    <li><strong>安全合规</strong>：数据不出域，输出标注免责声明，符合专业服务保密要求</li>
+</ol>
+
+<h2>八、未来规划</h2>
+
+<ul>
+    <li><strong>短期</strong>：接入更多专业数据库（裁判文书网、企查查等），提升数据质量</li>
+    <li><strong>中期</strong>：增加特工数量（投行特工、IP特工），覆盖更多专业领域</li>
+    <li><strong>长期</strong>：构建专业服务Agent生态，支持用户自定义特工和工作流</li>
+</ul>
+
+<div class="footer">
+    Agent Code No.7 — 每一次任务，使命必达<br>
+    GitHub: https://github.com/monarchmio/agent-code-no7
+</div>
+
+</body>
+</html>

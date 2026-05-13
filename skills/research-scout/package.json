@@ -1,0 +1,12 @@
+{
+  "name": "agent-code-no7-research-scout",
+  "version": "1.0.0",
+  "description": "Agent Code No.7 研究探员 - 行业研究与市场分析",
+  "keywords": ["agent", "research", "industry", "market", "analysis"],
+  "author": "monarchmio",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/monarchmio/agent-code-no7"
+  }
+}
