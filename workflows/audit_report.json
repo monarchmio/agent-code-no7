@@ -1,0 +1,80 @@
+{
+  "workflow_id": "wf-audit-report",
+  "name": "审计分析工作流",
+  "version": "1.0.0",
+  "description": "财务数据分析全流程：数据解析 → 比率计算 → 异常检测 → 底稿生成 → 报告输出",
+  "trigger": {
+    "type": "user_input",
+    "description": "用户上传财务数据（Excel/PDF）或描述分析需求"
+  },
+  "steps": [
+    {
+      "step_id": "step-1",
+      "name": "数据解析",
+      "agent": "agent-03-audit-eagle",
+      "action": "parse_financial_data",
+      "inputs": {
+        "data_source": "${trigger.data}",
+        "period": "${trigger.period}"
+      },
+      "outputs": ["structured_data", "data_quality_report"]
+    },
+    {
+      "step_id": "step-2a",
+      "name": "财务比率分析",
+      "agent": "agent-03-audit-eagle",
+      "action": "ratio_analysis",
+      "inputs": { "data": "${step-1.structured_data}" },
+      "outputs": ["ratio_results", "industry_comparison"]
+    },
+    {
+      "step_id": "step-2b",
+      "name": "异常交易检测",
+      "agent": "agent-03-audit-eagle",
+      "action": "anomaly_detection",
+      "inputs": { "data": "${step-1.structured_data}" },
+      "outputs": ["anomalies", "risk_flags"],
+      "parallel_with": "step-2a"
+    },
+    {
+      "step_id": "step-2c",
+      "name": "税务影响分析",
+      "agent": "agent-04-tax-butler",
+      "action": "tax_impact_analysis",
+      "inputs": { "data": "${step-1.structured_data}" },
+      "outputs": ["tax_analysis"],
+      "parallel_with": "step-2a"
+    },
+    {
+      "step_id": "step-3",
+      "name": "审计底稿生成",
+      "agent": "agent-03-audit-eagle",
+      "action": "generate_workpaper",
+      "inputs": {
+        "ratios": "${step-2a.ratio_results}",
+        "anomalies": "${step-2b.anomalies}",
+        "tax": "${step-2c.tax_analysis}"
+      },
+      "outputs": ["workpapers"]
+    },
+    {
+      "step_id": "step-4",
+      "name": "综合报告",
+      "agent": "agent-07-commander",
+      "action": "compile_audit_report",
+      "inputs": {
+        "data_quality": "${step-1.data_quality_report}",
+        "ratios": "${step-2a.ratio_results}",
+        "anomalies": "${step-2b.anomalies}",
+        "tax": "${step-2c.tax_analysis}",
+        "workpapers": "${step-3.workpapers}"
+      },
+      "outputs": ["final_report"]
+    }
+  ],
+  "error_handling": {
+    "on_step_failure": "retry_once_then_notify",
+    "timeout_per_step": 120,
+    "total_timeout": 600
+  }
+}

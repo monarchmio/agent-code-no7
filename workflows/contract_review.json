@@ -1,0 +1,94 @@
+{
+  "workflow_id": "wf-contract-review",
+  "name": "合同审查工作流",
+  "version": "1.0.0",
+  "description": "端到端的合同智能审查流程：文档解析 → 条款提取 → 风险识别 → 报告生成",
+  "trigger": {
+    "type": "user_input",
+    "description": "用户上传合同文档或粘贴合同文本"
+  },
+  "steps": [
+    {
+      "step_id": "step-1",
+      "name": "文档解析",
+      "agent": "agent-07-commander",
+      "action": "parse_and_route",
+      "description": "总指挥接收合同，识别合同类型，解析文档内容",
+      "inputs": {
+        "document": "${trigger.document}",
+        "user_requirements": "${trigger.requirements}"
+      },
+      "outputs": ["contract_text", "contract_type", "key_metadata"]
+    },
+    {
+      "step_id": "step-2",
+      "name": "条款提取与分析",
+      "agent": "agent-01-contract-guardian",
+      "action": "clause_extraction",
+      "description": "合同卫士逐条提取并分类合同条款",
+      "inputs": {
+        "contract_text": "${step-1.contract_text}",
+        "contract_type": "${step-1.contract_type}"
+      },
+      "outputs": ["clauses_list", "clause_categories"]
+    },
+    {
+      "step_id": "step-3",
+      "name": "法规对照检查",
+      "agent": "agent-02-legal-hunter",
+      "action": "compliance_check",
+      "description": "法律猎手检索相关法规，检查条款合规性",
+      "inputs": {
+        "clauses": "${step-2.clauses_list}",
+        "contract_type": "${step-1.contract_type}"
+      },
+      "outputs": ["compliance_results", "relevant_laws"],
+      "parallel_with": "step-2-risk"
+    },
+    {
+      "step_id": "step-2-risk",
+      "name": "风险条款识别",
+      "agent": "agent-01-contract-guardian",
+      "action": "risk_identification",
+      "description": "合同卫士识别高风险条款并评估风险等级",
+      "inputs": {
+        "clauses": "${step-2.clauses_list}",
+        "contract_type": "${step-1.contract_type}"
+      },
+      "outputs": ["risk_items", "risk_scores"]
+    },
+    {
+      "step_id": "step-4",
+      "name": "修改建议生成",
+      "agent": "agent-01-contract-guardian",
+      "action": "generate_suggestions",
+      "description": "针对风险条款生成具体修改建议",
+      "inputs": {
+        "risk_items": "${step-2-risk.risk_items}",
+        "compliance_results": "${step-3.compliance_results}",
+        "relevant_laws": "${step-3.relevant_laws}"
+      },
+      "outputs": ["modification_suggestions"]
+    },
+    {
+      "step_id": "step-5",
+      "name": "报告生成与审核",
+      "agent": "agent-07-commander",
+      "action": "compile_report",
+      "description": "总指挥汇总各环节结果，生成最终审查报告",
+      "inputs": {
+        "metadata": "${step-1.key_metadata}",
+        "clauses": "${step-2.clauses_list}",
+        "risks": "${step-2-risk.risk_items}",
+        "compliance": "${step-3.compliance_results}",
+        "suggestions": "${step-4.modification_suggestions}"
+      },
+      "outputs": ["final_report"]
+    }
+  ],
+  "error_handling": {
+    "on_step_failure": "retry_once_then_notify",
+    "timeout_per_step": 120,
+    "total_timeout": 600
+  }
+}

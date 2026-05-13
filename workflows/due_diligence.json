@@ -1,0 +1,99 @@
+{
+  "workflow_id": "wf-due-diligence",
+  "name": "尽职调查工作流",
+  "version": "1.0.0",
+  "description": "多维度并行尽调：法律/财务/商业/知识产权全景调查 → 风险汇总 → 综合报告",
+  "trigger": {
+    "type": "user_input",
+    "description": "用户输入目标公司名称及调查需求"
+  },
+  "steps": [
+    {
+      "step_id": "step-1",
+      "name": "任务规划",
+      "agent": "agent-07-commander",
+      "action": "plan_due_diligence",
+      "inputs": {
+        "target": "${trigger.target_company}",
+        "purpose": "${trigger.purpose}",
+        "scope": "${trigger.scope}"
+      },
+      "outputs": ["dd_plan", "checklist"]
+    },
+    {
+      "step_id": "step-2a",
+      "name": "工商信息核查",
+      "agent": "agent-06-due-diligence",
+      "action": "company_background",
+      "inputs": { "target": "${trigger.target_company}" },
+      "outputs": ["company_profile", "shareholder_structure"]
+    },
+    {
+      "step_id": "step-2b",
+      "name": "诉讼风险排查",
+      "agent": "agent-02-legal-hunter",
+      "action": "litigation_search",
+      "inputs": { "entity": "${trigger.target_company}" },
+      "outputs": ["litigation_records", "legal_risks"],
+      "parallel_with": "step-2a"
+    },
+    {
+      "step_id": "step-2c",
+      "name": "财务数据分析",
+      "agent": "agent-03-audit-eagle",
+      "action": "financial_dd",
+      "inputs": { "target": "${trigger.target_company}" },
+      "outputs": ["financial_health", "financial_risks"],
+      "parallel_with": "step-2a"
+    },
+    {
+      "step_id": "step-2d",
+      "name": "知识产权调查",
+      "agent": "agent-06-due-diligence",
+      "action": "ip_investigation",
+      "inputs": { "target": "${trigger.target_company}" },
+      "outputs": ["ip_portfolio", "ip_risks"],
+      "parallel_with": "step-2a"
+    },
+    {
+      "step_id": "step-2e",
+      "name": "行业与竞争分析",
+      "agent": "agent-05-research-scout",
+      "action": "competitive_analysis",
+      "inputs": { "target": "${trigger.target_company}" },
+      "outputs": ["market_position", "competitive_landscape"],
+      "parallel_with": "step-2a"
+    },
+    {
+      "step_id": "step-3",
+      "name": "风险汇总与评级",
+      "agent": "agent-06-due-diligence",
+      "action": "risk_consolidation",
+      "inputs": {
+        "company": "${step-2a.company_profile}",
+        "legal": "${step-2b.legal_risks}",
+        "financial": "${step-2c.financial_risks}",
+        "ip": "${step-2d.ip_risks}",
+        "market": "${step-2e.market_position}"
+      },
+      "outputs": ["risk_matrix", "overall_rating"]
+    },
+    {
+      "step_id": "step-4",
+      "name": "综合尽调报告",
+      "agent": "agent-07-commander",
+      "action": "compile_dd_report",
+      "inputs": {
+        "plan": "${step-1.dd_plan}",
+        "all_findings": "${step-3.risk_matrix}",
+        "rating": "${step-3.overall_rating}"
+      },
+      "outputs": ["dd_report"]
+    }
+  ],
+  "error_handling": {
+    "on_step_failure": "continue_with_warning",
+    "timeout_per_step": 180,
+    "total_timeout": 1200
+  }
+}

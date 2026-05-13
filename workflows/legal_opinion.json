@@ -1,0 +1,82 @@
+{
+  "workflow_id": "wf-legal-opinion",
+  "name": "法律意见书生成工作流",
+  "version": "1.0.0",
+  "description": "从法律问题到意见书：需求理解 → 法规检索 → 案例研究 → 分析论证 → 意见书生成",
+  "trigger": {
+    "type": "user_input",
+    "description": "用户提出法律咨询问题或请求出具法律意见书"
+  },
+  "steps": [
+    {
+      "step_id": "step-1",
+      "name": "需求分析",
+      "agent": "agent-07-commander",
+      "action": "analyze_requirements",
+      "description": "总指挥分析用户需求，确定法律问题和研究范围",
+      "inputs": {
+        "user_query": "${trigger.query}",
+        "context": "${trigger.context}"
+      },
+      "outputs": ["legal_issues", "research_scope", "research_plan"]
+    },
+    {
+      "step_id": "step-2a",
+      "name": "法规检索",
+      "agent": "agent-02-legal-hunter",
+      "action": "search_laws",
+      "description": "法律猎手检索相关法律法规和司法解释",
+      "inputs": {
+        "legal_issues": "${step-1.legal_issues}",
+        "scope": "${step-1.research_scope}"
+      },
+      "outputs": ["relevant_laws", "law_summaries"]
+    },
+    {
+      "step_id": "step-2b",
+      "name": "案例检索",
+      "agent": "agent-02-legal-hunter",
+      "action": "search_cases",
+      "description": "法律猎手检索相关司法判例",
+      "inputs": {
+        "legal_issues": "${step-1.legal_issues}",
+        "scope": "${step-1.research_scope}"
+      },
+      "outputs": ["relevant_cases", "case_summaries"],
+      "parallel_with": "step-2a"
+    },
+    {
+      "step_id": "step-3",
+      "name": "法律分析",
+      "agent": "agent-02-legal-hunter",
+      "action": "legal_analysis",
+      "description": "基于法规和判例进行法律分析论证",
+      "inputs": {
+        "legal_issues": "${step-1.legal_issues}",
+        "laws": "${step-2a.relevant_laws}",
+        "cases": "${step-2b.relevant_cases}"
+      },
+      "outputs": ["analysis_report", "conclusions"]
+    },
+    {
+      "step_id": "step-4",
+      "name": "意见书生成",
+      "agent": "agent-07-commander",
+      "action": "generate_opinion",
+      "description": "总指挥整合研究成果，生成法律意见书",
+      "inputs": {
+        "issues": "${step-1.legal_issues}",
+        "laws": "${step-2a.law_summaries}",
+        "cases": "${step-2b.case_summaries}",
+        "analysis": "${step-3.analysis_report}",
+        "conclusions": "${step-3.conclusions}"
+      },
+      "outputs": ["legal_opinion_draft"]
+    }
+  ],
+  "error_handling": {
+    "on_step_failure": "retry_once_then_notify",
+    "timeout_per_step": 180,
+    "total_timeout": 900
+  }
+}

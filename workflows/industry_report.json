@@ -1,0 +1,81 @@
+{
+  "workflow_id": "wf-industry-report",
+  "name": "行业研究报告工作流",
+  "version": "1.0.0",
+  "description": "行业深度研究：需求拆解 → 数据采集 → 多维分析 → 报告生成",
+  "trigger": {
+    "type": "user_input",
+    "description": "用户描述行业研究需求"
+  },
+  "steps": [
+    {
+      "step_id": "step-1",
+      "name": "研究规划",
+      "agent": "agent-07-commander",
+      "action": "plan_research",
+      "inputs": {
+        "industry": "${trigger.industry}",
+        "purpose": "${trigger.purpose}",
+        "depth": "${trigger.depth}"
+      },
+      "outputs": ["research_plan", "data_requirements"]
+    },
+    {
+      "step_id": "step-2a",
+      "name": "市场数据采集",
+      "agent": "agent-05-research-scout",
+      "action": "market_data_collection",
+      "inputs": { "plan": "${step-1.research_plan}" },
+      "outputs": ["market_data", "data_sources"]
+    },
+    {
+      "step_id": "step-2b",
+      "name": "政策环境分析",
+      "agent": "agent-02-legal-hunter",
+      "action": "policy_analysis",
+      "inputs": { "industry": "${trigger.industry}" },
+      "outputs": ["policy_landscape", "regulatory_trends"],
+      "parallel_with": "step-2a"
+    },
+    {
+      "step_id": "step-2c",
+      "name": "竞争格局分析",
+      "agent": "agent-05-research-scout",
+      "action": "competitive_analysis",
+      "inputs": { "industry": "${trigger.industry}" },
+      "outputs": ["competitive_landscape", "key_players"],
+      "parallel_with": "step-2a"
+    },
+    {
+      "step_id": "step-3",
+      "name": "深度分析与洞察",
+      "agent": "agent-05-research-scout",
+      "action": "deep_analysis",
+      "inputs": {
+        "market": "${step-2a.market_data}",
+        "policy": "${step-2b.policy_landscape}",
+        "competition": "${step-2c.competitive_landscape}"
+      },
+      "outputs": ["insights", "forecasts", "recommendations"]
+    },
+    {
+      "step_id": "step-4",
+      "name": "报告生成",
+      "agent": "agent-07-commander",
+      "action": "compile_report",
+      "inputs": {
+        "plan": "${step-1.research_plan}",
+        "data": "${step-2a.market_data}",
+        "policy": "${step-2b.policy_landscape}",
+        "competition": "${step-2c.competitive_landscape}",
+        "insights": "${step-3.insights}"
+      },
+      "outputs": ["industry_report"]
+    }
+  ],
+  "error_handling": {
+    "on_step_failure": "retry_once_then_notify",
+    "timeout_per_step": 180,
+    "total_timeout": 900
+  }
+}

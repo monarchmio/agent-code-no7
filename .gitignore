@@ -1,0 +1,35 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+venv/
+.env
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Logs
+*.log
+
+# Temp
+*.tmp
+*.bak
+
+# Video source files (keep compressed versions)
+*.mov
+*.avi
+raw_footage/
