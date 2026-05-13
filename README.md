@@ -21,7 +21,7 @@
 
 ## 💡 项目简介
 
-**Agent Code No.7** 是一个基于腾讯 CowPro 平台构建的多智能体协作系统，以 "AI特工局" 为核心概念，为专业服务机构（律所、会计师事务所、咨询公司）提供一站式智能办公解决方案。
+**Agent Code No.7** 是一个基于腾讯 ClawPro 平台构建的多智能体协作系统，以 "AI特工局" 为核心概念，为专业服务机构（律所、会计师事务所、咨询公司）提供一站式智能办公解决方案。
 
 ### 痛点洞察
 
@@ -106,7 +106,7 @@
 ```
 ┌─────────────────────────────────────────────────┐
 │                   用户交互层                      │
-│         CowPro 平台 / Web UI / API              │
+│         ClawPro 平台 / Web UI / API              │
 └──────────────────────┬──────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────┐
@@ -131,7 +131,7 @@
 
 ```
 ┌─────────────────────────────────────┐
-│          CowPro 平台层               │
+│          ClawPro 平台层               │
 │  ┌─────────┐  ┌──────────────────┐  │
 │  │ Agent   │  │  Workflow Engine  │  │
 │  │ Runtime │  │  (DAG 编排)       │  │
@@ -164,9 +164,9 @@
 
 ## 🚀 快速开始
 
-### 在 CowPro 平台使用
+### 在 ClawPro 平台使用
 
-1. 登录 [CowPro 平台](https://cowpro.tencent.com)
+1. 登录 [ClawPro 平台](https://clawpro.tencent.com)
 2. 导入 `agents/` 目录下的 Agent 配置文件
 3. 导入 `workflows/` 目录下的工作流定义
 4. 开始使用！
@@ -175,7 +175,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/YOUR_USERNAME/agent-code-no7.git
+git clone https://github.com/monarchmio/agent-code-no7.git
 cd agent-code-no7
 
 # 查看 Agent 配置
@@ -234,11 +234,11 @@ agent-code-no7/
 
 | 组件 | 技术 |
 |------|------|
-| AI 平台 | 腾讯 CowPro |
+| AI 平台 | 腾讯 ClawPro |
 | 大模型 | 腾讯混元 / DeepSeek |
-| Agent 框架 | CowPro Agent Runtime |
+| Agent 框架 | ClawPro Agent Runtime |
 | Prompt 策略 | Chain-of-Thought + ReAct + Reflection |
-| 工作流引擎 | CowPro DAG Workflow |
+| 工作流引擎 | ClawPro DAG Workflow |
 | 文档处理 | PDF/DOCX/XLSX 解析 |
 | 知识库 | RAG (检索增强生成) |
 
@@ -248,7 +248,7 @@ agent-code-no7/
 
 - **赛事**: 腾讯黑客松
 - **作品名**: Agent Code No.7
-- **赛道**: CowPro 平台应用
+- **赛道**: ClawPro 平台应用
 - **团队理念**: 用 AI 特工团队重新定义专业服务效率
 
 ---
